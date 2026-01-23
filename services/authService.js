@@ -70,9 +70,6 @@ exports.verifyEmail = async (req, res) => {
         const isCodeValid = await bcrypt.compare(verificationCode, user.verificationCode);
 
         if (!isCodeValid) {
-            user.verificationCode = null;
-            user.verificationCodeExpires = null;
-            await user.save();
             return res.status(400).json({
                 success: false,
                 message: "Invalid verification code",
@@ -232,10 +229,6 @@ exports.verifyResetCode = async (req, res) => {
 
         const isCodeValid = await bcrypt.compare(resetCode, user.passwordResetCode);
         if (!isCodeValid) {
-            user.passwordResetCode = null;
-            user.passwordResetExpires = null;
-            await user.save();
-
             return res.status(400).json({
                 success: false,
                 message: "Invalid reset code",
