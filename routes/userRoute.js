@@ -8,7 +8,7 @@ const {
     updateUser,
     deleteUser,
     changePassword
-}=require("../services/userService");
+}=require("../controllers/userController");
 
 const {
     createUserValidator,

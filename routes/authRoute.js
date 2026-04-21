@@ -8,7 +8,7 @@ const {
     verifyEmail,
     verifyResetCode,
     resetPassword
-}=require("../services/authService");
+}=require("../controllers/authController");
 
 const {
     registerValidator,

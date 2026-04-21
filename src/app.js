@@ -7,6 +7,7 @@ const mongoose = require("mongoose");
 
 const userRoute = require('../routes/userRoute');
 const authRoute = require('../routes/authRoute');
+const productRoute = require('../routes/productRoute');
 const { sanitizeResponse } = require("../middlewares/sanitizeResponse");
 
 
@@ -41,6 +42,7 @@ app.use (sanitizeResponse)
 // Routes
 app.use('/api/v1/users', userRoute);
 app.use('/api/v1/auth', authRoute);
+app.use('/api/v1/products', productRoute);
 
 // 404 handler - catch-all
 app.use((req, res, next) => {

@@ -1,18 +1,3 @@
-/**
- * Middleware to sanitize sensitive data from response objects
- * 
- * PROTECTED FIELDS & RATIONALE:
- * 
- * 1. password - CRITICAL: Never expose hashed passwords
- * 2. passwordResetCode - CRITICAL: Security token for password reset
- * 3. passwordResetExpires - HIGH: Security timing information
- * 4. verificationCode - CRITICAL: Email verification token
- * 5. verificationCodeExpires - HIGH: Security timing information
- * 6. passwordChangedAt - MEDIUM: Token invalidation logic
- * 7. resetverified - MEDIUM: Internal security state
- * 8. __v - LOW: MongoDB version key
- * 9. _id - LOW: Use uuid instead
- */
 
 const sanitizeResponse = (req, res, next) => {
     // Store original json method
