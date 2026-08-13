@@ -24,9 +24,9 @@ const productSchema = new mongoose.Schema({
         min: [0, 'Product price cannot be negative']
     },
     category: {
-        type: String,
-        required: [true, 'Please enter product category'],
-        maxLength: [50, 'Product category cannot exceed 50 characters']
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category',
+        required: [true, 'Please select a product category'],
     },
     stock: {
         type: Number,

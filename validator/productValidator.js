@@ -14,7 +14,7 @@ exports.createProductValidator = [
     .isFloat({ gt: 0 }).withMessage("Product price must be a positive number"),
   body("category")
     .notEmpty().withMessage("Product category is required")
-    .isLength({ max: 50 }).withMessage("Product category cannot exceed 50 characters"),
+    .isMongoId().withMessage("Category must be a valid category ID"),
   body("stock")
     .notEmpty().withMessage("Product stock is required")
     .isInt({ gt: -1 }).withMessage("Product stock must be a non-negative integer"),

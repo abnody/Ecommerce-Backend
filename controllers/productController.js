@@ -4,7 +4,7 @@ const cloudinary = require("../config/cloudinary");
 
 exports.getAllProducts = async (req, res) => {
     try {
-        const products = await Product.find(); 
+        const products = await Product.find().populate('category', 'name slug uuid');
         res.status(200).json({
             success: true,
             data: products,
@@ -58,7 +58,8 @@ exports.createProduct = async (req, res) => {
 
 exports.getProduct = async (req,res) => {
     try{
-        const product = await Product.findOne({ uuid: req.params.id });
+        const product = await Product.findOne({ uuid: req.params.id }).populate('category', 'name slug uuid');
+
 
         if(!product){
             return res.status(404).json({
