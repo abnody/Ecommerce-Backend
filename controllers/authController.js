@@ -17,13 +17,10 @@ exports.register = async (req, res) => {
             verificationCodeExpires
         });
 
-    
         await sendEmail({
-            to: "ahmedalabnody45@gmail.com",  // In real application, send this code to real email [user.email]
+            to: user.email,
             subject: "Your verification code (valid for 10 minutes)",
             text: `Your verification code is: ${verificationCode}`,
-            cc: '<ahmedalabnody45@gmail.com>',
-            
         });    
         return res.status(200).json({
             success: true,
@@ -50,9 +47,6 @@ exports.verifyEmail = async (req, res) => {
     try {
 
         if (!user) {
-            user.verificationCode = null;
-            user.verificationCodeExpires = null;
-            await user.save();
             return res.status(404).json({
                 success: false,
                 message: "User not found",
@@ -166,11 +160,9 @@ exports.forgotPassword = async (req, res) => {
 
     try{
         await sendEmail({
-            to: [user.email],
+            to: user.email,
             subject: "Your password reset code (valid for 10 minutes)",
             text: `Your password reset code is: ${resetCode}`,
-            cc: '<ahmedalabnody45@gmail.com>',
-            
         });    
         return res.status(200).json({
             success: true,
@@ -200,10 +192,6 @@ exports.verifyResetCode = async (req, res) => {
     const user = await User.findOne({ email }); 
     try {
         if (!user) {
-            user.passwordResetCode = null;
-            user.passwordResetExpires = null;
-            await user.save();
-
             return res.status(404).json({
                 success: false,
                 message: "User not found",
@@ -258,8 +246,6 @@ exports.resetPassword = async (req, res) => {
     const user = await User.findOne({ email }); 
     try {
         if (!user) {
-            user.resetverified = false;
-            await user.save();
             return res.status(404).json({
                 success: false,
                 message: "User not found",

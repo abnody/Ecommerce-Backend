@@ -61,7 +61,7 @@ exports.getProduct = async (req,res) => {
         const product = await Product.findOne({ uuid: req.params.id });
 
         if(!product){
-            res.status(404).json({
+            return res.status(404).json({
                 success: false,
                 message: "No product found with this id"
             })
@@ -82,30 +82,37 @@ exports.getProduct = async (req,res) => {
 }
 
 exports.deleteProduct = async (req, res) => {
-    const product = await Product.findOne({ uuid: req.params.id });
-    if(!product){
-        res.status(404).json({
+    try {
+        const product = await Product.findOne({ uuid: req.params.id });
+        if(!product){
+            return res.status(404).json({
+                success: false,
+                message: "No product found with this id"
+            });
+        }
+
+        const publicIds = product.images.map(img => img.public_id);
+        await cloudinary.api.delete_resources(publicIds);
+
+        const data = await Product.findOneAndDelete({ uuid: req.params.id });
+
+        res.status(200).json({
+            success: true,
+            data,
+            message: "Product deleted successfully"
+        });
+    } catch (err) {
+        res.status(500).json({
             success: false,
-            message: "No product found with this id"
-        })
+            message: err.message,
+        });
     }
-
-    const publicIds = product.images.map(img => img.public_id);
-    await cloudinary.api.delete_resources(publicIds);
-
-    const data = await Product.findOneAndDelete({ uuid: req.params.id });
-
-    res.status(200).json({
-        success: true,
-        data,
-        message: "Product deleted successfully"
-    })
 }
 
 exports.updateProduct = async (req, res) => {
     try{
         const product = await Product.findOne({ uuid: req.params.id });
-        if(!product) res.status(404).json({success: false, message: "No product found with this id"});
+        if(!product) return res.status(404).json({success: false, message: "No product found with this id"});
 
         const allowedFields = [
             "name",
@@ -125,15 +132,16 @@ exports.updateProduct = async (req, res) => {
 
         await product.save();
 
+        const allProducts = await Product.find();
         res.status(200).json({
             success: true,
-            data: Product.find(),
+            data: allProducts,
             message: "Product updated successfully"
         });
     } catch(err){
         res.status(500).json({
             success: false,
-            message: err
+            message: err.message
         })
     }
 }
@@ -142,23 +150,26 @@ exports.deleteProductImage = async (req, res) => {
     try{
         const product = await Product.findOne({ uuid: req.params.id });
         if(!product){
-            res.status(404).json({
+            return res.status(404).json({
                 success: false,
                 message: "No product found with this id"
-            })
+            });
         }
-        
-        await cloudinary.api.delete_resources(req.body.public_id);
+
+        await cloudinary.api.delete_resources([req.body.public_id]);
+
+        product.images = product.images.filter(img => img.public_id !== req.body.public_id);
+        await product.save();
 
         res.status(200).json({
-            success:false,
-            data: Product.find(),
+            success: true,
+            data: product,
             message: "Image deleted successfully"
         });
     }catch(err){
         res.status(500).json({
             success: false,
-            message: err
+            message: err.message
         })
     }
 }
@@ -167,18 +178,25 @@ exports.addProductImage = async (req, res) => {
     try {
         const product = await Product.findOne({ uuid: req.params.id });
         if(!product){
-            res.status(404).json({
+            return res.status(404).json({
                 success: false,
                 message: "No product found with this id"
-            })
+            });
         }
 
-        
+        const newImages = req.files.map(file => ({ url: file.path, public_id: file.filename }));
+        product.images.push(...newImages);
+        await product.save();
 
+        res.status(200).json({
+            success: true,
+            data: product,
+            message: "Image(s) added successfully"
+        });
     } catch (err) {
         res.status(500).json({
             success: false,
-            message: err
+            message: err.message
         })
     }
 }

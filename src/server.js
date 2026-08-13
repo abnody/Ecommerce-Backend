@@ -1,8 +1,6 @@
 
 const app = require("./app");
 
-const userRoute = require('../routes/userRoute');
-
 
 
 // Create server
